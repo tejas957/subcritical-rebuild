@@ -28,19 +28,23 @@ function initNavToggle() {
 
 /* ---------- Hero starburst mark ---------- */
 // Recreates the client's dandelion/starburst logo mark as an inline SVG so it
-// scales cleanly and can carry a subtle "energizing" animation. Swap this for
-// their real logo file once available.
+// scales cleanly and carries a continuous "energizing" animation (rays draw
+// in once, then keep shimmering and slowly orbiting, with the whole mark
+// gently breathing) — swap this for their real logo file once available.
 function initHeroStarburst() {
   const svg = document.getElementById('heroStarburst');
   if (!svg) return;
   const ns = 'http://www.w3.org/2000/svg';
-  const cx = 560, cy = 210; // burst center sits right of the wordmark
-  const rayCount = 34;
+  const cx = 700, cy = 260; // burst center sits right of the wordmark (bigger viewBox: 0 0 960 520)
+  const rayCount = 46;
+  const wrapper = document.createElementNS(ns, 'g');
+  wrapper.setAttribute('class', 'hero-mark-group');
   const g = document.createElementNS(ns, 'g');
+  wrapper.appendChild(g);
 
   for (let i = 0; i < rayCount; i++) {
     const angle = (i / rayCount) * Math.PI * 2 + (i % 2 === 0 ? 0.05 : -0.03);
-    const len = 90 + Math.random() * 100;
+    const len = 110 + Math.random() * 130;
     const x2 = cx + Math.cos(angle) * len;
     const y2 = cy + Math.sin(angle) * len;
 
@@ -52,7 +56,7 @@ function initHeroStarburst() {
     ray.setAttribute('stroke', '#ffffff');
     ray.setAttribute('stroke-width', '1');
     ray.setAttribute('class', 'beam-ray');
-    ray.style.animationDelay = `${i * 0.03}s`;
+    ray.style.animationDelay = `${i * 0.03}s, ${i * 0.09}s`;
     g.appendChild(ray);
 
     const dot = document.createElementNS(ns, 'circle');
@@ -61,11 +65,27 @@ function initHeroStarburst() {
     dot.setAttribute('r', '4.5');
     dot.setAttribute('fill', '#ffffff');
     g.appendChild(dot);
+
+    // A slow orbiting trail dot on a subset of rays for continuous motion
+    if (i % 3 === 0) {
+      const orbit = document.createElementNS(ns, 'circle');
+      const orbitLen = len * (0.4 + Math.random() * 0.35);
+      const ox = cx + Math.cos(angle) * orbitLen;
+      const oy = cy + Math.sin(angle) * orbitLen;
+      orbit.setAttribute('cx', ox);
+      orbit.setAttribute('cy', oy);
+      orbit.setAttribute('r', '2');
+      orbit.setAttribute('fill', 'var(--accent)');
+      orbit.setAttribute('class', 'beam-ray-trail');
+      orbit.style.animationDuration = `${14 + Math.random() * 10}s`;
+      orbit.style.animationDelay = `${Math.random() * -20}s`;
+      g.appendChild(orbit);
+    }
   }
 
   // A single long horizontal ray to the left, matching the reference mark
   const longRay = document.createElementNS(ns, 'line');
-  longRay.setAttribute('x1', 60);
+  longRay.setAttribute('x1', 70);
   longRay.setAttribute('y1', cy);
   longRay.setAttribute('x2', cx);
   longRay.setAttribute('y2', cy);
@@ -81,15 +101,20 @@ function initHeroStarburst() {
   center.setAttribute('class', 'beam-dot');
   g.appendChild(center);
 
-  svg.appendChild(g);
+  svg.appendChild(wrapper);
 }
 
 /* ---------- Technology diagram interactivity ---------- */
+// Uses the real diagram image (images/energy-amplifier-diagram.png) with
+// invisible, percentage-positioned hotspot buttons layered on top, so the
+// hover/focus tooltip behavior works against the client's actual graphic.
 function initDiagram() {
-  const svg = document.getElementById('techDiagram');
+  const wrap = document.getElementById('diagramImageWrap');
   const tooltip = document.getElementById('diagramTooltip');
   const toggle = document.getElementById('beamToggle');
-  if (!svg || !tooltip) return;
+  if (!wrap || !tooltip) return;
+
+  const hotspots = wrap.querySelectorAll('.hotspot');
 
   const copy = {
     accelerator: ['Proton Accelerator', 'Fires a high-energy proton beam down the line toward the spallation target — this is the throttle for the whole plant.'],
@@ -104,12 +129,12 @@ function initDiagram() {
     grid: ['Electrical Grid', 'Delivers the finished power to homes, businesses and data centers.'],
   };
 
-  svg.querySelectorAll('.diagram-node').forEach((node) => {
+  hotspots.forEach((node) => {
     const key = node.getAttribute('data-key');
     const entry = copy[key];
     if (!entry) return;
     const show = () => {
-      svg.querySelectorAll('.diagram-node').forEach((n) => n.classList.remove('is-active'));
+      hotspots.forEach((n) => n.classList.remove('is-active'));
       node.classList.add('is-active');
       tooltip.innerHTML = `<span class="tag">${entry[0]}</span><p>${entry[1]}</p>`;
     };
@@ -123,10 +148,7 @@ function initDiagram() {
     toggle.addEventListener('click', () => {
       const isOn = toggle.classList.toggle('is-on');
       toggle.setAttribute('aria-checked', String(isOn));
-      const beam = svg.querySelector('[data-key="beam"]');
-      const fuel = svg.querySelector('[data-key="fuel"]');
-      if (beam) beam.style.opacity = isOn ? '1' : '0.15';
-      if (fuel) fuel.style.opacity = isOn ? '0.85' : '0.25';
+      wrap.classList.toggle('beam-off', !isOn);
       tooltip.innerHTML = isOn
         ? '<span class="tag">Beam on</span><p>Neutrons are flowing into the core. Fission is running, and heat is moving through the plant.</p>'
         : '<span class="tag">Beam off</span><p>No neutrons, no fission. This is the entire safety case: switching the accelerator off is enough to stop the reaction.</p>';

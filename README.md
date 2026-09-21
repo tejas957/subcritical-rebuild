@@ -53,6 +53,63 @@ The current subcritical.com is built in Framer, so there are two paths:
    at this site (hosted anywhere above). Fastest option, but content edits
    then happen in this codebase, not in Framer's visual editor.
 
+## Quick edits — images, spacing, colors
+
+You don't need to touch any JavaScript for these. Everything below is in
+plain HTML/CSS.
+
+**Swap a placeholder image**
+1. Drop your new file into `images/` (any name is fine — keep it lowercase,
+   no spaces, e.g. `images/accelerator-photo.jpg`).
+2. Find the matching `<img src="images/...">` tag in the HTML file for that
+   page (`index.html` for the homepage sections, etc.) and change the `src`
+   to your new filename. A few to know:
+   - Accelerator photo: `index.html`, search for `accelerator-placeholder.svg`.
+   - Technology diagram: `index.html`, search for `energy-amplifier-diagram.png`
+     — if you replace this one, the invisible hover "hotspots" sitting on
+     top of it (the `<button class="hotspot" ...>` lines right below the
+     `<img>` tag) are positioned in percentages, so they'll need their
+     `left`/`top`/`width`/`height` values nudged to match your new image's
+     layout. Easiest way: open the page, and temporarily add
+     `outline: 1px solid red;` to the `.hotspot` CSS rule in `style.css` so
+     you can see the boxes while you adjust the numbers, then remove it.
+   - Team headshots: `index.html`, search for `team-avatar` — currently
+     initials-in-a-circle; swap the `<div>` for an `<img>` once you have
+     real photos.
+3. Save and refresh the page — no build step, no restart needed.
+
+**Edit spacing**
+Spacing is controlled by a few CSS variables at the very top of
+`css/style.css`, inside the `:root { ... }` block:
+- `--gutter` — the left/right page margin.
+- `--max-width` — how wide the content column gets on large screens.
+- `--radius` / `--radius-sm` — corner rounding on cards, buttons, images.
+Beyond those, most sections use `padding` and `gap` values set directly on
+that section's class (e.g. `.hero { padding: 72px 0 40px; }`). Search
+`style.css` for the class name shown in the browser inspector and adjust
+the `padding`/`margin`/`gap` numbers directly — they're plain pixels, so
+larger number = more space.
+
+**Edit colors**
+Also in the `:root { ... }` block at the top of `style.css`:
+```css
+--black: #000000;      /* page background */
+--panel: #0f0f0f;       /* card/section backgrounds */
+--border: rgba(255,255,255,0.14);   /* hairline borders */
+--white: #ffffff;
+--gray-300 / 400 / 500: ...;         /* body text shades */
+--accent: #d9a45a;      /* the gold accent — buttons, highlights, hover glow */
+--accent-blue: #7fb0d9; /* used sparingly, e.g. hero subhead */
+```
+Change a variable once here and it updates everywhere that color is used
+across all four pages — you don't need to hunt through the file for every
+occurrence.
+
+**Edit fonts**
+Search each HTML file's `<head>` for the Google Fonts `<link>` and swap the
+font name there, then update the `--font-sans` variable in `style.css` to
+match.
+
 ## Known placeholders — replace before launch
 
 - **Font**: styled with Inter (closest free match to the screenshots). If

@@ -187,14 +187,14 @@ p.lede { font-size: 1.15rem; color: var(--gray-300); max-width: 700px; }
 .hero-mark {
   position: relative;
   width: 100%;
-  max-width: 760px;
+  max-width: 960px;
   margin: 0 auto 8px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.hero-mark svg { width: 100%; height: auto; }
+.hero-mark svg { width: 100%; height: auto; overflow: visible; }
 
 .hero-wordmark {
   position: absolute;
@@ -211,7 +211,21 @@ p.lede { font-size: 1.15rem; color: var(--gray-300); max-width: 700px; }
   transform-origin: center;
   animation: pulse-dot 2.4s ease-in-out infinite;
 }
-.beam-ray { stroke-dasharray: 4 4000; animation: draw-ray 2.6s var(--ease) forwards; }
+.beam-ray {
+  stroke-dasharray: 4 4000;
+  animation: draw-ray 2.6s var(--ease) forwards, ray-shimmer 3.6s ease-in-out infinite;
+  animation-delay: 0s, 2.6s;
+  transform-origin: center;
+}
+.beam-ray-trail {
+  animation: orbit-trail linear infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.hero-mark-group {
+  animation: mark-breathe 7s ease-in-out infinite;
+  transform-origin: center;
+}
 @keyframes pulse-dot {
   0%, 100% { r: 5; opacity: 1; }
   50% { r: 8; opacity: 0.7; }
@@ -219,6 +233,24 @@ p.lede { font-size: 1.15rem; color: var(--gray-300); max-width: 700px; }
 @keyframes draw-ray {
   from { stroke-dashoffset: 4000; }
   to { stroke-dashoffset: 0; }
+}
+@keyframes ray-shimmer {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+@keyframes orbit-trail {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes mark-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.015); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .beam-ray, .beam-ray-trail, .hero-mark-group, .beam-dot {
+    animation: none !important;
+  }
 }
 
 .hero h1 { margin-top: 12px; }
@@ -302,15 +334,44 @@ p.lede { font-size: 1.15rem; color: var(--gray-300); max-width: 700px; }
   background: radial-gradient(ellipse at 50% 0%, rgba(217,164,90,0.06), transparent 60%);
 }
 
-.diagram-svg { width: 100%; height: auto; }
-
-.diagram-node { cursor: pointer; }
-.diagram-node rect, .diagram-node circle, .diagram-node ellipse {
-  transition: filter 0.2s var(--ease);
+.diagram-image-wrap {
+  position: relative;
+  width: 100%;
+  line-height: 0;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
 }
-.diagram-node:hover rect, .diagram-node:hover circle, .diagram-node:hover ellipse,
-.diagram-node.is-active rect, .diagram-node.is-active circle, .diagram-node.is-active ellipse {
-  filter: drop-shadow(0 0 8px var(--accent));
+
+.diagram-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: filter 0.4s var(--ease), opacity 0.4s var(--ease);
+}
+
+/* "Beam off" state: dim + desaturate the whole diagram */
+.diagram-image-wrap.beam-off .diagram-img {
+  filter: grayscale(0.6) brightness(0.55);
+  opacity: 0.85;
+}
+
+.hotspot {
+  position: absolute;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  transition: background 0.2s var(--ease), border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+.hotspot:hover,
+.hotspot:focus-visible,
+.hotspot.is-active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  box-shadow: 0 0 18px rgba(217, 164, 90, 0.45);
+  outline: none;
 }
 
 .diagram-tooltip {
