@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#050505"/>
+      <stop offset="1" stop-color="#161616"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <g stroke="#3a3a3a" stroke-width="2" fill="none">
+    <line x1="0" y1="500" x2="800" y2="120"/>
+    <line x1="0" y1="0" x2="800" y2="220"/>
+  </g>
+  <g fill="#20242b" stroke="#55606e" stroke-width="2">
+    <ellipse cx="120" cy="330" rx="70" ry="60"/>
+    <ellipse cx="280" cy="300" rx="70" ry="60"/>
+    <ellipse cx="440" cy="270" rx="70" ry="60"/>
+    <ellipse cx="600" cy="240" rx="70" ry="60"/>
+    <ellipse cx="750" cy="215" rx="60" ry="55"/>
+  </g>
+  <text x="400" y="470" text-anchor="middle" font-family="sans-serif" font-size="16" fill="#7a7a7a">Placeholder — replace with client accelerator-tunnel photo</text>
+</svg>
