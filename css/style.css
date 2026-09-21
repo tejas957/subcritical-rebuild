@@ -128,9 +128,8 @@ button { font-family: inherit; }
 }
 
 /* ---------- Sections / type ---------- */
-
-section { padding: 128px 0; }
-section.tight { padding: 88px 0; }
+section { padding: 84px 0 !important; }
+section.tight { padding: 62px 0 !important; }
 
 .eyebrow {
   text-transform: uppercase;
